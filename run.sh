@@ -1,37 +1,58 @@
-# SRC_PATH=$1
-# MODEL_PATH=$2
-# IN_FILE=$3
-# TEMP_PATH=$4
-# OUT_PATH=$5
+arg=$1
+if [ "$arg" == "-u" ]
+then
+    IN_FILE=$2
+    URLflag=true
+else
+    URLflag=false
+    IN_FILE=$1
+fi
 
-SRC_PATH="./src/"
-MODEL_PATH="./model/"
-IN_FILE=$1
-TEMP_PATH="./data/tmp/"
-OUT_PATH="./data/output/"
+SRC="./src/"
+MODEL="./model/"
+TEMP="./data/tmp/"
+OUT="./data/output/"
+IN="./data/input/"
 
-#TEMP FILE
-CLEAN_PATH=$TEMP_PATH/clean.txt
-SEGMENT_PATH=$TEMP_PATH/segment.txt
-TOKEN_PATH=$TEMP_PATH/tokens.txt
+# INPUT_FILE
+RAW=$IN/article.txt
 
-# OUTPUT PATHECTORY
-FREQ_PATH_WORDS=$OUT_PATH/freq.txt
-BIGRAM_PATH=$OUT_PATH/bigram.txt
-TRIGRAM_PATH=$OUT_PATH/trigram.txt
-TFIDF_PATH=$OUT_PATH/score.txt
-TOPICS_PATH=$OUT_PATH/topics.txt
+# TEMP FILE
+CLEAN=$TEMP/clean.txt
+SEGMENT=$TEMP/segment.txt
+TOKEN=$TEMP/tokens.txt
 
-python $SRC_PATH/crawl.py $1
-# echo "python $SRC_PATH/01-clean.py $IN_FILE $CLEAN_PATH"
-python $SRC_PATH/01-clean.py $IN_FILE $CLEAN_PATH
-# echo "python $SRC_PATH/02-segment.py $CLEAN_PATH $SEGMENT_PATH $MODEL_PATH/user_dict.txt"
-python $SRC_PATH/02-segment.py $CLEAN_PATH $SEGMENT_PATH $MODEL_PATH/user_dict.txt
-# echo "python $SRC_PATH/03-filter.py $SEGMENT_PATH $TOKEN_PATH"
-python $SRC_PATH/03-filter.py $SEGMENT_PATH $TOKEN_PATH
-# echo "python $SRC_PATH/04a-ngram.py $TOKEN_PATH $FREQ_PATH_WORDS $BIGRAM_PATH $TRIGRAM_PATH"
-python $SRC_PATH/04a-ngram.py $TOKEN_PATH $FREQ_PATH_WORDS $BIGRAM_PATH $TRIGRAM_PATH
-# echo "python $SRC_PATH/04b-tfidf.py $TOKEN_PATH $TFIDF_PATH $MODEL_PATH/tfidf_dict.txt"
-python $SRC_PATH/04b-tfidf.py $TOKEN_PATH $TFIDF_PATH $MODEL_PATH/tfidf_dict.txt
-# echo "python $SRC_PATH/04c-topics.py $TOKEN_PATH $TOPICS_PATH"
-python $SRC_PATH/04c-topics.py $TOKEN_PATH $TOPICS_PATH
+# OUTPUT FILE
+FREQ_WORDS=$OUT/freq.txt
+BIGRAM=$OUT/bigram.txt
+TRIGRAM=$OUT/trigram.txt
+TFIDF=$OUT/score.txt
+TOPICS=$OUT/topics.txt
+SENTIMENT=$OUT/sentiment.txt
+
+# MODEL FILE
+MODEL_TFIDF=$MODEL/tfidf_dict.txt
+MODEL_DOC2VEC=$MODEL/model_news.d2v
+MODEL_LR=$MODEL/sentiment.lm
+
+if [ $URLflag == "true" ]
+then
+    echo "python $SRC/01a-crawl.py $IN_FILE $RAW"
+    python $SRC/01a-crawl.py $IN_FILE $RAW
+    IN_FILE=$RAW
+fi
+echo "python $SRC/01-clean.py $IN_FILE $CLEAN"
+python $SRC/01-clean.py $IN_FILE $CLEAN
+echo "python $SRC/02-segment.py $CLEAN $SEGMENT"
+python $SRC/02-segment.py $CLEAN $SEGMENT
+echo "python $SRC/03-filter.py $SEGMENT $TOKEN"
+python $SRC/03-filter.py $SEGMENT $TOKEN
+echo "python $SRC/04d-sentiment.py $CLEAN $TOKEN $SENTIMENT $MODEL_DOC2VEC $MODEL_LR &"
+python $SRC/04d-sentiment.py $CLEAN $TOKEN $SENTIMENT $MODEL_DOC2VEC $MODEL_LR &
+echo "python $SRC/04a-ngram.py $TOKEN $FREQ_WORDS $BIGRAM $TRIGRAM &" 
+python $SRC/04a-ngram.py $TOKEN $FREQ_WORDS $BIGRAM $TRIGRAM &
+echo "python $SRC/04b-tfidf.py $TOKEN $TFIDF $MODEL_TFIDF &"
+python $SRC/04b-tfidf.py $TOKEN $TFIDF $MODEL_TFIDF &
+echo "python $SRC/04c-topics.py $TOKEN $TOPICS &"
+python $SRC/04c-topics.py $TOKEN $TOPICS &
+wait

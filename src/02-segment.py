@@ -2,19 +2,12 @@ import jieba
 import sys
 import unicodedata
 
-
-# Check if a word is all characters, including Chinese and English
-def isCharacter(w):
-    if not w.isalpha():
-        return False
-    return True
-
-
 inputfile = str(sys.argv[1])
 outputfile = str(sys.argv[2])
-userdict = str(sys.argv[3])
 
-jieba.load_userdict(userdict)
+# Save 75% time if not using user dict
+# Default dictionary is substituted by userdict
+# jieba.load_userdict(userdict)
 
 content=[]
 
@@ -28,9 +21,6 @@ for i in content:
     # clean and tokenize document string
     tokens=[]
     for w in jieba.cut(i):
-#         print w
-#         if len(w)>1:
-#             if isCharacter(w):
                 tokens.append(w.strip())
     texts.append(tokens)
 

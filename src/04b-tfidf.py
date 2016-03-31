@@ -30,6 +30,7 @@ for line in open(infile):
 for line in open(dictfile):
     dict_records.append(re.split(r'\t|\n',line))
 
+    
 word = [record[1] for record in dict_records]
 word_in_docs_count = [record[2] for record in dict_records]
 
