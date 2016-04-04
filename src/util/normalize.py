@@ -2,6 +2,7 @@
 import jieba
 import unicodedata
 import re
+import HTMLParser
 from langconv import *
 
 class Normalize:
@@ -40,34 +41,17 @@ class Normalize:
         return output.strip().split("\n")
 
     def clean(self,documents):
-        # loop through document list
-        texts=[]
-        for tokens in documents:
-            # clean and tokenize document string
-            a=[]
-            for token in tokens:
-                # Assume all stop words are single Chinese characters
-                # TODO: replace hard coded length to stop words 
-                w = token.strip().rstrip()
-                w = re.sub(r'[@|#|$|%|^|&|*]',r'',w)
-                if (w.isalnum() and len(w)>3):
-                      a.append(w)                      
-                elif len(w)>1:
-                      a.append(w)       
-            # Remove empty line
-            if a:
-                texts.append(a)
-        return texts
+        clean_doc = [HTMLParser.HTMLParser().unescape(line) for line in documents]
+        clean_doc = [(re.sub(r'[<|>|+|=|_|@|#|$|%|^|&|*]',r'',line)) for line in documents]
+        
+        return clean_doc
+        
     
     def translate(self, documents):
         c=Converter('zh-hant')  
         documents_zh = [c.convert(line) for line in documents]
-        return documents_zh
+        return documents_zh    
 
-    # Remove comment after 4 April 2016
-    # Save 75% time if not using user dict
-    # Default dictionary is substituted by userdict
-    # jieba.load_userdict(userdict)
     def segment(self,documents):
         # loop through document list
         texts=[]
@@ -77,3 +61,21 @@ class Normalize:
             texts.append(tokens)
         return texts
     
+    def removeStopWords(self,documents):
+        texts=[]
+        for tokens in documents:
+            # clean and tokenize document string
+            a=[]
+            for token in tokens:
+                # Remove special character, Chinese
+                # and English stop words (determined by length)
+                # TODO: replace hard coded length to stop words 
+                w = token.strip().rstrip()
+                if (w.isalnum() and len(w)>3):
+                      a.append(w)                      
+                elif len(w)>1:
+                      a.append(w)       
+            # Remove empty line
+            if a:
+                texts.append(a)
+        return texts

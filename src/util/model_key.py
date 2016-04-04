@@ -1,3 +1,4 @@
+import os
 import re
 import math
 import operator
@@ -8,15 +9,21 @@ from gensim import corpora, models
 class KeyModel:
     
     dict_records = []
+    doc_num = 0
+    topic_num = 3 # Default 3 topics in lsi
+    
+    def setTopic(self,i):
+        self.topic_num=i
     
     def __init__(self, *args, **kwargs):
         dict_records=[]
+
         # dictfile format: 
         # <index>\t<token>\t<occurrence>\n
         if(len(args)>0):
             dictfile = args[0]
             for line in open(dictfile):
-                dict_records.append(re.split(r'\t|\n',line))
+                    dict_records.append(re.split(r'\t|\n| ',line))
     
     def ngrams(self, documents, n):
         bag_of_words=[documents[i][j] for i in range(len(documents)) for j in range(len(documents[i]))]
@@ -30,18 +37,16 @@ class KeyModel:
     def tfidf(self, documents):
         
         bag_of_words=[documents[i][j] for i in range(len(documents)) for j in range(len(documents[i]))]
-        
+
         d = self.dict_records
         word = [x[1] for x in d]
         word_in_docs_count = [x[2] for x in d]
         record = dict(zip(word,word_in_docs_count))
-        
-        # total_docs: magic number; total documents in wiki 
-        # TODO: remove magic number
-        total_docs = 227364 # tfidf_dict.num_docs
+
+        total_docs = self.doc_num # tfidf_dict.num_docs
         total_words = len(bag_of_words)
         count = Counter(bag_of_words)
-        
+
         output=[]
         for key,value in count.iteritems():
             if(record.has_key(key)):
@@ -58,11 +63,9 @@ class KeyModel:
 
         # convert tokenized documents into a document-term matrix
         corpus = [dictionary.doc2bow(document) for document in documents]    
-
-        # Maximum 3 topics in an essay
-        numTopics=min(3,len(documents))
-
-        lsi = models.LsiModel(corpus, id2word=dictionary, num_topics=numTopics)
+        tfidf = models.TfidfModel(corpus)        
+        numTopics=min(self.topic_num,len(documents))
+        lsi = models.LsiModel(tfidf[corpus], id2word=dictionary, num_topics=numTopics)
         
         # Convert separated (word,score) vectors to
         # word-score matrix; 0 represents empty entries
@@ -82,7 +85,7 @@ class KeyModel:
             for k,v in d.items():
                 if len(v)<=i:
                     d[k].append(0)
-        sort_d=sorted(d.iteritems(),key=lambda(k,v):v[0],reverse=True)
+        sort_d=sorted(d.iteritems(),key=operator.itemgetter(1),reverse=True)
         return sort_d
     
     def load(self,infile):
@@ -93,6 +96,9 @@ class KeyModel:
         return document
     
     def save(self,outfile,model):
+	dir = os.path.dirname(outfile)
+	if not os.path.exists(dir):
+    		os.makedirs(dir)
         with open(outfile,'w') as f:
             for word,count in model:
                 f.write(word.encode('utf-8')+": " +str(count)+"\n")  

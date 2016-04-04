@@ -1,9 +1,11 @@
 .gitignore
 .DS_Store
 .ipynb_checkpoints/
+sql.py
 *.xml
 *.npy
 *.pyc
 devel/
 model/
 archive/
+data/output/

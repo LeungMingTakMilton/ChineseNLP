@@ -5,37 +5,39 @@ from gensim.models import Doc2Vec
 
 # classifier
 from sklearn.externals import joblib
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LogisticRegression
+
+import os
 
 class Sentiment:
     
     model=None
-    glm=None
+    lr=None
     
     def __init__(self, doc2vecModel, linearModel):
         self.model = Doc2Vec.load(doc2vecModel)
-        self.glm = joblib.load(linearModel)
+        self.lr = joblib.load(linearModel)
         
     def getTotalSentiment(self,document):
         
         model=self.model
-        glm=self.glm
+        lr=self.lr
         
         no_of_sentence=len(document)        
         bag_of_words=[document[i][j] for i in range(no_of_sentence) for j in range(len(document[i]))]
         
         vectors_documents=[model.infer_vector(bag_of_words)]
-        total_score = glm.predict(vectors_documents)
+        total_score = lr.predict_proba(vectors_documents)
         
         return [float("{0:.2f}".format(x)) for x in total_score[0]]
      
     def getSentenceSentiment(self,document,Total=False):
         
         model=self.model
-        glm=self.glm
+        lr=self.lr
         
         vectors = [model.infer_vector(token) for token in document]
-        prediction = glm.predict(vectors)
+        prediction = lr.predict_proba(vectors)
         output=[((document[i],([float("{0:.2f}".format(x)) for x in prediction[i]])))for i in range(len(document))]
         if(Total):
             total=("",self.getTotalSentiment(document))
@@ -50,12 +52,15 @@ class Sentiment:
         return document
     
     def save(self,outfile,model,Total=False):
+        dir = os.path.dirname(outfile)
+        if not os.path.exists(dir):
+            os.makedirs(dir)
         with open(outfile,'w') as f:
             for i in range(len(model)):
                 word=model[i][0]
                 count=model[i][1]
                 line=" ".join(word).encode('utf-8')
-                if False and i==len(model)-1:
+                if Total and i==len(model)-1:
                     f.write(line+"Overall: " +str(count) +"\n")
                 else:
                     f.write(line+": " +str(count) +"\n")

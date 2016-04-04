@@ -34,7 +34,7 @@ def main():
 
     # Default model path
     sentimentModelPath="model/train_news.d2v"
-    linearModelPath="model/sentiment.glm"
+    linearModelPath="model/sentiment.mlr"
     tfidfModelPath="model/tfidf_dict.txt"
 
     # Default output files
@@ -63,17 +63,23 @@ def main():
         raw=Crawler().loadFromFile(infile)
 
     n=Normalize()
-    token_zh=n.translate(n.seperateLines([raw]))
-    documents=n.clean(n.segment(token_zh))
+    token_zh=n.translate(n.clean(n.seperateLines([raw])))
+    documents=n.removeStopWords(n.segment(token_zh))
 
+    if(useTfIdf):
+        # total_docs: magic number; total documents in wiki 
+        # TODO: remove magic number
+        m=KeyModel(tfidfModelPath)
+        m.doc_num=227364
+    else:
+         m=KeyModel()
+    
     if(useNgrams):
-        m=KeyModel()
         ngrams=[m.ngrams(documents,i+1) for i in range(3)]
         for i in range(len(ngrams)):
             m.save(ngramsFile[i],ngrams[i])
 
     if(useTfIdf):
-        m=KeyModel(tfidfModelPath)
         score=m.tfidf(documents)
         m.save(keyFile,score)
 
@@ -84,7 +90,7 @@ def main():
     if(useSentiment):
         se=Sentiment(sentimentModelPath,linearModelPath)
         emotion=se.getSentenceSentiment(documents,True)
-        se.save(sentimentFile,emotion)
+        se.save(sentimentFile,emotion,True)
 
 if __name__ == "__main__":
     main()
