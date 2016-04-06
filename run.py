@@ -90,6 +90,9 @@ def main():
     if(useSentiment):
         se=Sentiment(sentimentModelPath,linearModelPath)
         emotion=se.getSentenceSentiment(documents,True)
+        # [["zh_word_1", "zh_word_2"...],[0.3,0.2,0,0,0.5,0,0,0]] ->
+        # [["zh_word_1 zh_word_2..."],[0.3,0.2,0,0,0.5,0,0,0]]
+        emotion=[([" ".join(x[0])],x[1]) for x in emotion]
         se.save(sentimentFile,emotion,True)
 
 if __name__ == "__main__":
