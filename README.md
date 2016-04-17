@@ -14,6 +14,14 @@ python run.py -lnstu https://theinitium.com/article/20160309-dailynews-alphago/ 
 python run.py [-l|-n|-s|-t|-u] [input file] [outputPath]
 ```
 
+## Dependencies
+gensim
+jieba
+sklearn
+numpy
+readability
+BeautifulSoup
+
 ###  ngrams and frequency count
 option: -n
 output files: [freq bigram trigram]
