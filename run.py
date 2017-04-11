@@ -6,11 +6,11 @@ from src.util.model_key import *
 from src.util.model_sentiment import *
 
 def usage():
-    print """
+    print ("""
           usage:
           python run.py [-s|-t|-n|-l] [input file] [output path]
           python run.py -u [-s|-t|-n|-l] [url] [output path]
-          """
+          """)
     return 
 
 def main():
@@ -25,7 +25,7 @@ def main():
         opts, args = getopt.getopt(sys.argv[1:],'ustnl',lontOpts)
     except getopt.GetoptError as err:
         # print help information and exit:
-        print str(err) 
+        print (str(err))
         usage()
         sys.exit(2)
 
