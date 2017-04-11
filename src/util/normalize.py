@@ -2,7 +2,7 @@
 import jieba
 import unicodedata
 import re
-import HTMLParser
+from html.parser import HTMLParser
 from langconv import *
 
 class Normalize:

@@ -1,8 +1,8 @@
 import requests
 import unicodedata
-import HTMLParser
+from html.parser import HTMLParser
 from readability.readability import Document
-from BeautifulSoup import BeautifulSoup
+from bs4 import BeautifulSoup
 
 class Crawler():
     
