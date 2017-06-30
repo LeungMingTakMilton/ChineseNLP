@@ -33,9 +33,9 @@ def main():
     outpath = args[1]
 
     # Default model path
-    sentimentModelPath="/var/www/html/ChineseNLP/model/train_news.d2v"
-    linearModelPath="/var/www/html/ChineseNLP/model/sentiment.mlr"
-    tfidfModelPath="/var/www/html/ChineseNLP/model/tfidf_dict.txt"
+    sentimentModelPath="./model/train_news.d2v"
+    linearModelPath="./model/sentiment.mlr"
+    tfidfModelPath="./model/tfidf_dict.txt"
 
     # Default output files
     ngramsFile = [outpath+"/freq",outpath+"/bigram",outpath+"/trigram"]
