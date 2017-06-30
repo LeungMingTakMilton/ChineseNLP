@@ -1,6 +1,6 @@
 .gitignore
 .DS_Store
-.ipynb_checkpoints/
+.ipynb_checkpoints
 sql.py
 *.xml
 *.npy
@@ -9,3 +9,7 @@ devel/
 model/
 archive/
 data/output/
+plot.py
+query.sh
+worker.sh
+crontab.out
