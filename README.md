@@ -14,7 +14,7 @@ Find files in data/output/ after execution
 ## 3. Example
 a. Extract key topics and most common words from a document:
 ```bash
-python run.py -lnst data/input/essay data/output/essay/
+python run.py -lnt data/input/essay data/output/essay/
 ```
 b. Extract key topics and most common words from url:
 ```bash
