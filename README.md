@@ -1,8 +1,7 @@
 # ChineseNLP
+NLP Engine that supports keyword extraction, topic modelling and sentiment analysis
 
-## In a nutshell
-
-1. Installation
+## 1. Installation
 ```bash
 pip install -r requirements.txt
 ```
