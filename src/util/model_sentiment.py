@@ -22,12 +22,13 @@ class Sentiment:
         
         model=self.model
         lr=self.lr
-        
-        no_of_sentence=len(document)        
-        bag_of_words=[document[i][j] for i in range(no_of_sentence) for j in range(len(document[i]))]
-        
-        vectors_documents=[model.infer_vector(bag_of_words)]
-        total_score = lr.predict_proba(vectors_documents)
+        total_score=[[]]
+
+        if(document):
+            no_of_sentence=len(document)        
+            bag_of_words=[document[i][j] for i in range(no_of_sentence) for j in range(len(document[i]))]
+            vectors_documents=[model.infer_vector(bag_of_words)]
+            total_score = lr.predict_proba(vectors_documents)
         
         return [float("{0:.2f}".format(x)) for x in total_score[0]]
      
@@ -35,10 +36,13 @@ class Sentiment:
         
         model=self.model
         lr=self.lr
+        output=[]
         
-        vectors = [model.infer_vector(token) for token in document]
-        prediction = lr.predict_proba(vectors)
-        output=[((document[i],([float("{0:.2f}".format(x)) for x in prediction[i]])))for i in range(len(document))]
+        if(document):
+            vectors = [model.infer_vector(token) for token in document]
+            prediction = lr.predict_proba(vectors)
+            output=[((document[i],([float("{0:.2f}".format(x)) for x in prediction[i]])))for i in range(len(document))]
+        
         if(Total):
             total=("",self.getTotalSentiment(document))
             output.append(total)
@@ -59,7 +63,7 @@ class Sentiment:
             for i in range(len(model)):
                 word=model[i][0]
                 count=model[i][1]
-                line=" ".join(word).encode('utf-8')
+                line=": ".join(word).encode('utf-8')
                 if Total and i==len(model)-1:
                     f.write(line+"Overall: " +str(count) +"\n")
                 else:

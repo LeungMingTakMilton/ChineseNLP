@@ -16,14 +16,11 @@ class KeyModel:
         self.topic_num=i
     
     def __init__(self, *args, **kwargs):
-        dict_records=[]
-
         # dictfile format: 
         # <index>\t<token>\t<occurrence>\n
         if(len(args)>0):
             dictfile = args[0]
-            for line in open(dictfile):
-                    dict_records.append(re.split(r'\t|\n| ',line))
+            self.dict_records=[re.split(r'\t|\n| ',line) for line in open(dictfile,'r')]
     
     def ngrams(self, documents, n):
         bag_of_words=[documents[i][j] for i in range(len(documents)) for j in range(len(documents[i]))]
@@ -46,15 +43,15 @@ class KeyModel:
         total_docs = self.doc_num # tfidf_dict.num_docs
         total_words = len(bag_of_words)
         count = Counter(bag_of_words)
-
         output=[]
         for key,value in count.iteritems():
-            if(record.has_key(key)):
-                occur = float(record.get(key))
+            if(record.has_key(key.encode('utf-8'))):
+                occur = float(record.get(key.encode('utf-8')))
             else:
                 occur = 0
             tf = value/float(total_words)
             idf =  math.log((total_docs+1)/(occur+1),2)
+            # print value,total_words,total_docs,occur
             output.append((key,float("{0:.4f}".format(tf*idf))))
         return sorted(output, key=operator.itemgetter(1),reverse=True)    
     def topics(self,documents):
@@ -89,11 +86,7 @@ class KeyModel:
         return sort_d
     
     def load(self,infile):
-        document=[]
-        for line in open(infile):
-            line = line.decode('utf-8').rstrip().strip().split(" ")
-            document.append(line)
-        return document
+        return  [line.rstrip().strip().split(" ") for line in open(infile)]
     
     def save(self,outfile,model):
 	dir = os.path.dirname(outfile)

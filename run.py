@@ -33,9 +33,9 @@ def main():
     outpath = args[1]
 
     # Default model path
-    sentimentModelPath="model/train_news.d2v"
-    linearModelPath="model/sentiment.mlr"
-    tfidfModelPath="model/tfidf_dict.txt"
+    sentimentModelPath="/var/www/html/ChineseNLP/model/train_news.d2v"
+    linearModelPath="/var/www/html/ChineseNLP/model/sentiment.mlr"
+    tfidfModelPath="/var/www/html/ChineseNLP/model/tfidf_dict.txt"
 
     # Default output files
     ngramsFile = [outpath+"/freq",outpath+"/bigram",outpath+"/trigram"]
@@ -65,7 +65,6 @@ def main():
     n=Normalize()
     token_zh=n.translate(n.clean(n.seperateLines([raw])))
     documents=n.removeStopWords(n.segment(token_zh))
-
     if(useTfIdf):
         # total_docs: magic number; total documents in wiki 
         # TODO: remove magic number
@@ -74,6 +73,7 @@ def main():
     else:
          m=KeyModel()
     
+    m.setTopic(6)
     if(useNgrams):
         ngrams=[m.ngrams(documents,i+1) for i in range(3)]
         for i in range(len(ngrams)):
