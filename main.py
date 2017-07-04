@@ -1,0 +1,32 @@
+# -*- coding: utf-8 -*-
+import sys
+from flask import Flask, request
+from src.util.crawler import * 
+from src.util.normalize import *
+from src.util.model_key import *
+from src.util.model_sentiment import *
+', '.join([w for w in jieba.cut('Hello world')])
+tfidfModelPath="./model/tfidf_dict.txt"
+n=Normalize()
+m=KeyModel(tfidfModelPath)
+m.setTopic(6)
+m.doc_num=227364
+app = Flask(__name__)
+
+@app.route('/api/nlp', methods=['GET'])
+def main():
+	toString=lambda x:x[0]+' '+str(x[1])
+	# url=request.json['url']
+	url = request.args.get('url')
+	raw=Crawler().loadFromWeb(url)
+	token_zh=n.translate(n.clean(n.seperateLines([raw])))
+	documents=n.removeStopWords(n.segment(token_zh))
+	ngrams=[m.ngrams(documents,i+1) for i in range(3)]
+	score=m.tfidf(documents)
+	topics=m.topics(documents)
+	# topic1'\n'.join(map(toString,topics))
+	# tfidf: '\n'.join(map(toString,score))
+	# trigram: '\n'.join(map(toString,ngrams[2]))
+	# topic2: '\n\n'.join(['\n'.join(map(lambda x:x[0]+' '+str(x[1][idx]),tags[idx])) for idx in range(6)])
+	tags=[filter(lambda x:x[1][idx]!=0,topics) for idx in range(6)]
+	return reduce(lambda x,y:x.replace(y[0],'<em><strong><mark>'+y[0]+'</mark></em></strong>'),tags[0],raw)
