@@ -71,9 +71,9 @@ class Normalize:
                 # and English stop words (determined by length)
                 # TODO: replace hard coded length to stop words 
                 w = token.strip().rstrip()
-                if (w.isalnum() and len(w)>3):
+                if (w.isalnum() and len(w)>3 ):
                       a.append(w)                      
-                elif len(w)>1:
+                elif len(w)>1 and w not in ['a','an','we','I','they','their','have','has','as','of','in','am' 'and','the']:
                       a.append(w)       
             # Remove empty line
             if a:
