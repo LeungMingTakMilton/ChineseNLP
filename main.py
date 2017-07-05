@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 from flask import Flask, request
-from src.util.crawler import * 
+from src.util.crawler import *
 from src.util.normalize import *
 from src.util.model_key import *
 from src.util.model_sentiment import *
@@ -36,9 +36,8 @@ def analyse(url):
 def get():
 	url=request.args.get('url')
 	return analyse(url)
-	
+
 @app.route('/api/nlp', methods=['POST'])
 def post():
 	url=request.json['url']
 	return analyse(url)
-	
