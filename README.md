@@ -5,11 +5,18 @@ NLP Engine that supports keyword extraction, topic modelling and sentiment analy
 ```bash
 pip install -r requirements.txt
 ```
-## 2. run.py usage
+## 2a. run.py usage (NLP CLI)
 ```bash
 python run.py [-l|-n|-s|-t|-u] [input file] [outputPath]
 ```
 Find files in data/output/ after execution
+
+## 2b. main.py usage (NLP topic extraction server)
+```bash
+export FLASK_APP=main.py
+flask run
+```
+Get key topics and tags in http://127.0.0.1/api/nlp?url=[Enter your article url here]
 
 ## 3. Example
 a. Extract key topics and most common words from a document:

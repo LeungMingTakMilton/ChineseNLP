@@ -27,7 +27,7 @@ def analyse(url):
 	# trigram: '\n'.join(map(toString,ngrams[2]))
 	# topic2: '\n\n'.join(['\n'.join(map(lambda x:x[0]+' '+str(x[1][idx]),tags[idx])) for idx in range(6)])
 	tags=[filter(lambda x:x[1][idx]!=0,topics) for idx in range(len(topics[0][1]))]
-	highlight_text=reduce(lambda x,y:x.replace(y[0][0],'<b style="background-color:'+y[1]+'">'+y[0][0]+'</b>'),
+	highlight_text=reduce(lambda x,y:x.replace(y[0][0],'<b style=\'background-color:'+y[1]+'\'>'+y[0][0]+'</b>'),
 		zip(reduce(lambda a,b:a+b,tags[:min(len(topics[0][1]),3)]),['#F1948A']*len(tags[0])+['#82E0AA']*len(tags[1])+['#85C1E9']*len(tags[2])),raw)
 
 	return highlight_text +'<p>'+'<p>'.join(['<br>'.join(map(lambda x:x[0]+' '+str(x[1][idx]),tags[idx])) for idx in range(len(topics[0][1]))])
