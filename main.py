@@ -41,3 +41,6 @@ def get():
 def post():
 	url=request.json['url']
 	return analyse(url)
+
+if __name__ == '__main__':
+	app.run(host='0.0.0.0',debug=True)

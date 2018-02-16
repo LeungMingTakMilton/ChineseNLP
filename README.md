@@ -13,8 +13,7 @@ Find files in data/output/ after execution
 
 ## 2b. main.py usage (NLP topic extraction server)
 ```bash
-export FLASK_APP=main.py
-flask run
+python main.py
 ```
 Get key topics and tags in http://127.0.0.1/api/nlp?url=[Enter your article url here]
 
